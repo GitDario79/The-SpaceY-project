@@ -2,8 +2,6 @@
 In this projet I will play the role of Data Scientist for the fictional company SpaceY, trying to compete with SpaceX.
 
 
-The Space Y project involves taking the role of a data scientist working for a new rocket company called Space Y.
-
 The primary goal of the project is to determine the price of each launch. A key factor in launch cost is the reuse of the first stage of the rocket, which significantly reduces expenses. SpaceX, unlike other providers, can recover its first stage.
 The main tasks in this project will be:
 
