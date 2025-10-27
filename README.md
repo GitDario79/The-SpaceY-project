@@ -1,6 +1,7 @@
 # SpaceY — Reusability Prediction API
 
-![CI](https://github.com/GitDario79/The-SpaceY-project/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/GitDario79/The-SpaceY-project/actions/workflows/ci.yml/badge.svg?branch=main)
+
 
 FastAPI service that serves a tiny scikit-learn model (saved with joblib) to predict the probability that a booster is reusable. Includes tests and GitHub Actions CI so reviewers can verify it runs.
 
