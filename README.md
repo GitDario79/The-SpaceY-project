@@ -1,17 +1,146 @@
+# SpaceY — Reusability Prediction API
+
 ![CI](https://github.com/GitDario79/The-SpaceY-project/actions/workflows/ci.yml/badge.svg)
 
+FastAPI service that serves a tiny scikit-learn model (saved with joblib) to predict the probability that a booster is reusable. Includes tests and GitHub Actions CI so reviewers can verify it runs.
 
-# The-SpaceY-project
-In this projet I will play the role of Data Scientist for the fictional company SpaceY, trying to compete with SpaceX.
+---
 
+## Why this repo matters
 
-The primary goal of the project is to determine the price of each launch. A key factor in launch cost is the reuse of the first stage of the rocket, which significantly reduces expenses. SpaceX, unlike other providers, can recover its first stage.
-The main tasks in this project will be:
+- **Product thinking:** turns a model into an **HTTP API** that anyone can call.
+- **Reproducible:** artifact built from a script; environment pinned via `requirements.txt`.
+- **Quality:** unit tests + CI on every push/PR.
+- **Clarity:** minimal endpoints, typed payloads, and a 2-minute quickstart.
 
-•Gathering information about SpaceX.
-•Creating dashboards for your team.
-•Determining if SpaceX will reuse the first stage.
+---
 
-I will train a machine learning model using public information to predict whether SpaceX will reuse the first stage. This prediction is crucial because if the first stage can land successfully, the launch cost is lower. Sometimes the first stage does not land, or it is sacrificed due to mission parameters like payload or orbit.
+## Quickstart
 
-The project draws inspiration from the commercial space age, where companies like Virgin Galactic, Rocket Lab, Blue Origin, and especially SpaceX, are making space travel more affordable. SpaceX's Falcon 9 rocket is highlighted for its relatively inexpensive launches, priced around $62 million, compared to others that can cost upwards of $165 million, largely because of the first stage reuse. Understanding if the first stage will land is key to understanding the cost.
+> Windows PowerShell shown; macOS/Linux: replace the activate line with `source .venv/bin/activate`.
+
+```bash
+# 1) Setup
+python -m venv .venv
+. .venv/Scripts/activate
+pip install -r requirements.txt
+
+# 2) Build the demo model artifact
+python scripts/train_dummy_model.py    # writes models/model.joblib
+
+# 3) Run the API
+uvicorn app.main:app --reload
+# Open docs: http://127.0.0.1:8000/docs
+Smoke test (new shell):
+
+bash
+Copy code
+# Single prediction
+curl -X POST http://127.0.0.1:8000/predict \
+  -H "Content-Type: application/json" \
+  -d "{\"features\":[0.1,0.5,1.2]}"
+
+# Batch prediction
+curl -X POST http://127.0.0.1:8000/predict-batch \
+  -H "Content-Type: application/json" \
+  -d "{\"batch\":[[0.1,0.5,1.2],[0.9,1.0,0.8]]}"
+Endpoints
+GET /health → { "status": "ok" }
+
+POST /predict → body:
+
+json
+Copy code
+{ "features": [0.1, 0.5, 1.2] }
+response:
+
+json
+Copy code
+{ "reusability_probability": 0.462 }
+POST /predict-batch → body:
+
+json
+Copy code
+{ "batch": [[0.1, 0.5, 1.2], [0.9, 1.0, 0.8]] }
+response:
+
+json
+Copy code
+{ "reusability_probabilities": [0.462, 0.873] }
+Run tests
+bash
+Copy code
+# from repo root, with venv active
+pytest -q
+Project structure
+bash
+Copy code
+The-SpaceY-project/
+├─ app/
+│  └─ main.py              # FastAPI app (uses lifespan to load the model)
+├─ src/
+│  ├─ model.py             # joblib loader + single/batch predict
+│  └─ schemas.py           # pydantic request models
+├─ scripts/
+│  └─ train_dummy_model.py # builds models/model.joblib
+├─ tests/
+│  ├─ test_api.py          # health + single predict
+│  └─ test_api_batch.py    # batch predict
+├─ models/                 # generated artifacts (ignored in git)
+├─ .github/workflows/
+│  └─ ci.yml               # GitHub Actions (install → build artifact → tests)
+├─ requirements.txt
+├─ pytest.ini
+└─ README.md
+CI (GitHub Actions)
+On every push/PR to main, CI will:
+
+Set up Python
+
+pip install -r requirements.txt
+
+python scripts/train_dummy_model.py
+
+pytest -q
+
+Badge: (uses the file path of your workflow)
+
+markdown
+Copy code
+![CI](https://github.com/GitDario79/The-SpaceY-project/actions/workflows/ci.yml/badge.svg)
+If your workflow filename isn’t ci.yml, change the badge URL to match (e.g., api-ci.yml).
+
+Notes & decisions
+Artifacts: models/*.joblib is git-ignored; re-build locally/CI via the script.
+
+Startup: app uses FastAPI lifespan to load the model at startup (modern replacement for @on_event).
+
+Typing: Pydantic models validate request bodies; responses return rounded probabilities for readability.
+
+Troubleshooting
+Badge looks failing or “no status”:
+
+Confirm the workflow file is at .github/workflows/ci.yml (or update the badge URL to your actual filename).
+
+Confirm default branch is main.
+
+Push any change to trigger a new run.
+
+ModuleNotFoundError: app or src:
+
+Ensure app/__init__.py, src/__init__.py exist and pytest.ini contains:
+
+ini
+Copy code
+[pytest]
+testpaths = tests
+pythonpath = .
+FileNotFoundError: models/model.joblib:
+
+Run python scripts/train_dummy_model.py before starting the API or running tests.
+
+License
+MIT (see LICENSE if present).
+
+Recruiter one-liner
+“I wrapped a scikit-learn model as a FastAPI service, added schema validation, tests, and CI. The artifact is built in CI and the API exposes both single and batch prediction with docs at /docs.”
