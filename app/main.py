@@ -1,4 +1,3 @@
-# app/main.py
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from src.schemas import Features, BatchFeatures
@@ -9,7 +8,7 @@ async def lifespan(app: FastAPI):
     # startup
     load_model()  # fail fast if artifact is missing
     yield
-    # shutdown (nothing to clean up right now)
+    # shutdown (nothing to clean up yet)
 
 app = FastAPI(title="SpaceY Reusability Predictor", version="0.2.1", lifespan=lifespan)
 
@@ -26,4 +25,5 @@ def predict(feats: Features):
 def predict_batch(payload: BatchFeatures):
     probs = predict_proba_batch(payload.batch)
     return {"reusability_probabilities": [round(p, 3) for p in probs]}
+
 
