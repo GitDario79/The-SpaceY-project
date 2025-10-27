@@ -31,10 +31,11 @@ python scripts/train_dummy_model.py    # writes models/model.joblib
 # 3) Run the API
 uvicorn app.main:app --reload
 # Open docs: http://127.0.0.1:8000/docs
+```
+
 Smoke test (new shell):
 
-bash
-Copy code
+```bash
 # Single prediction
 curl -X POST http://127.0.0.1:8000/predict \
   -H "Content-Type: application/json" \
@@ -44,37 +45,36 @@ curl -X POST http://127.0.0.1:8000/predict \
 curl -X POST http://127.0.0.1:8000/predict-batch \
   -H "Content-Type: application/json" \
   -d "{\"batch\":[[0.1,0.5,1.2],[0.9,1.0,0.8]]}"
+```
+
 Endpoints
 GET /health → { "status": "ok" }
 
 POST /predict → body:
 
-json
-Copy code
+```json
 { "features": [0.1, 0.5, 1.2] }
+```
 response:
-
-json
-Copy code
+```json
 { "reusability_probability": 0.462 }
+```
 POST /predict-batch → body:
-
-json
-Copy code
+```json
 { "batch": [[0.1, 0.5, 1.2], [0.9, 1.0, 0.8]] }
+```
 response:
-
-json
-Copy code
+```json
 { "reusability_probabilities": [0.462, 0.873] }
+```
+
 Run tests
-bash
-Copy code
+```bash
 # from repo root, with venv active
 pytest -q
+```
 Project structure
-bash
-Copy code
+```bash
 The-SpaceY-project/
 ├─ app/
 │  └─ main.py              # FastAPI app (uses lifespan to load the model)
@@ -92,6 +92,7 @@ The-SpaceY-project/
 ├─ requirements.txt
 ├─ pytest.ini
 └─ README.md
+```
 CI (GitHub Actions)
 On every push/PR to main, CI will:
 
@@ -105,9 +106,10 @@ pytest -q
 
 Badge: (uses the file path of your workflow)
 
-markdown
-Copy code
+```markdown
 ![CI](https://github.com/GitDario79/The-SpaceY-project/actions/workflows/ci.yml/badge.svg)
+```
+
 If your workflow filename isn’t ci.yml, change the badge URL to match (e.g., api-ci.yml).
 
 Notes & decisions
@@ -130,17 +132,17 @@ ModuleNotFoundError: app or src:
 
 Ensure app/__init__.py, src/__init__.py exist and pytest.ini contains:
 
-ini
-Copy code
+```ini
 [pytest]
 testpaths = tests
 pythonpath = .
+```
 FileNotFoundError: models/model.joblib:
 
 Run python scripts/train_dummy_model.py before starting the API or running tests.
 
 License
-MIT (see LICENSE if present).
+MIT
 
-Recruiter one-liner
-“I wrapped a scikit-learn model as a FastAPI service, added schema validation, tests, and CI. The artifact is built in CI and the API exposes both single and batch prediction with docs at /docs.”
+
+I wrapped a scikit-learn model as a FastAPI service, added schema validation, tests, and CI. The artifact is built in CI and the API exposes both single and batch prediction with docs at /docs.
