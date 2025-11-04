@@ -105,7 +105,7 @@ python scripts/train_dummy_model.py
 
 pytest -q
 
-Badge: (uses the file path of your workflow)
+Badge:
 
 ```markdown
 ![CI](https://github.com/GitDario79/The-SpaceY-project/actions/workflows/ci.yml/badge.svg)
