@@ -98,13 +98,14 @@ CI (GitHub Actions)
 On every push/PR to main, CI will:
 
 Set up Python
+```
 
 pip install -r requirements.txt
 
 python scripts/train_dummy_model.py
 
 pytest -q
-
+```
 Badge:
 
 ```markdown
